@@ -1,0 +1,86 @@
+.header{
+    font-size: x-large;
+}
+
+.container{
+    background-image: url(/public/pexels-ola-noland-1065013723-20677366.jpg) ;
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+    padding-left: 8dvw; 
+    height: 100dvh; 
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    overflow: hidden;
+}
+
+.form{
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    min-height: 300px;
+    padding: 1em;
+    background-color: #FC8F54;
+    border-color: #1B1833;
+    border: solid;
+    border-radius: 8px;
+    border-width: 2px;
+}
+.errorMessage {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Auth.module.css */
+.input {
+    color: #1B1833;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background-color: #DFF2EB;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus {
+    border-color: #441752;
+    box-shadow: 0 0 5px #1B1833;
+    outline: none;
+}
+
+
+.link {
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.error {
+    background-color: #ffe6e6;
+    border: 1px solid #ffcccc;
+    color: #cc0000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    width: 100%; /* Синхронизация ширины */
+    max-width: 300px; /* Максимальная ширина */
+
+}
+
+.error h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.error p {
+    margin: 5px 0 0;
+    font-size: 14px;
+}

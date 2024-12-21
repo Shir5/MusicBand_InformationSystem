@@ -1,0 +1,19 @@
+.profileMenu {
+    position: absolute;
+    top: 100%; /* Показывает меню ниже иконки */
+    right: 0;
+    background-color: white; /* Фон меню */
+    color: #333; /* Цвет текста */
+    border: 1px solid #ccc; /* Граница */
+    border-radius: 5px; /* Скруглённые углы */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Тень */
+    padding: 1rem; /* Внутренние отступы */
+    z-index: 1000; /* Приоритет отображения */
+    width: 200px; /* Ширина меню */
+}
+
+.profileMenu p {
+    margin: 0 0 1rem 0; /* Отступ для текста username */
+    font-size: 1rem;
+    font-weight: bold;
+}

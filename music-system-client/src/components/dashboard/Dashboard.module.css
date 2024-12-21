@@ -1,0 +1,155 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Высота всего окна браузера */
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Убирает возможные полосы прокрутки */
+    background: transparent; /* Прозрачный фон */
+}
+
+.navbar {
+    background-color: #333;
+    padding: 1rem;
+    padding-left: 2rem;
+    display: flex;
+    justify-content: space-between; /* Ссылки слева, иконка справа */
+    align-items: center; /* Выравнивание по центру */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+}
+
+div svg {
+    color: #c31560; /* Изменение цвета иконки */
+    font-size: 2em;
+    transition: transform 0.3s, color 0.3s; /* Анимация при наведении */
+}
+
+div svg:hover {
+    color: #ff6600; /* Новый цвет при наведении */
+    transform: scale(1.2); /* Увеличение при наведении */
+}
+
+.navLinks {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 2rem;
+    font-size: 1.2em;
+}
+
+.navLinks li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+    padding: 1em;
+}
+
+.navLinks li a:hover {
+    color: #c31560; /* Цвет при наведении */
+}
+
+.navLinks li a.active {
+    color: #c31560; /* Цвет активной ссылки */
+    border-bottom: 2px solid #c31560; /* Подчёркивание активной ссылки */
+}
+
+.profileIconContainer {
+    position: relative; /* Чтобы меню позиционировалось относительно иконки */
+}
+
+.profileMenu {
+    position: absolute;
+    top: 100%; /* Показывает меню ниже иконки */
+    right: 0;
+    background-color: white; /* Фон меню */
+    color: #333; /* Цвет текста */
+    border: 1px solid #ccc; /* Граница */
+    border-radius: 5px; /* Скруглённые углы */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Тень */
+    padding: 1rem; /* Внутренние отступы */
+    z-index: 1000; /* Приоритет отображения */
+    width: 200px; /* Ширина меню */
+}
+
+.profileMenu p {
+    margin: 0 0 1rem 0; /* Отступ для текста username */
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.logoutButton {
+    display: block; /* Кнопка занимает всю ширину меню */
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #c31560; /* Цвет кнопки */
+    color: white; /* Цвет текста */
+    border: none; /* Убирает стандартные границы */
+    border-radius: 5px; /* Скруглённые углы */
+    cursor: pointer;
+    transition: background-color 0.3s; /* Плавное изменение цвета */
+}
+
+.logoutButton:hover {
+    background-color: #ff6600; /* Цвет кнопки при наведении */
+}
+
+.content {
+    margin-top: 3rem; /* Отступ под navbar */
+    position: relative;
+    width: 100vw;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    animation-duration: 0.5s; /* Время анимации */
+    animation-fill-mode: both;
+    padding: 1rem;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

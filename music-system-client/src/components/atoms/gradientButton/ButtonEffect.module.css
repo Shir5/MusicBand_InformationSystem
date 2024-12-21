@@ -1,0 +1,20 @@
+.button {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background: #740938; /* Базовый цвет кнопки */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    margin-top: 0.5em;
+}
+
+.button:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}

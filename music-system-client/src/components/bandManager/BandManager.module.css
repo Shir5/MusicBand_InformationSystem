@@ -1,0 +1,261 @@
+
+* {
+    box-sizing: border-box;
+
+}
+
+
+.container {
+    flex-grow: 1;
+    max-width: 100dvw;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: 80px 40px; /* Увеличьте верхний отступ */
+    text-align: center;
+    background: transparent; /* Прозрачный фон */
+    box-shadow: none; /* Убирает тени, если есть */
+
+}
+
+
+.error {
+    color: red;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #f8f9fa; 
+    opacity: 0.8; 
+    padding: 10px; 
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.table th {
+    background-color: #DFF2EB;
+    font-weight: bold;
+}
+
+.noData {
+    text-align: center;
+    font-style: italic;
+    color: #555;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.pageButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #1B1833;
+    color: #f4f4f4;
+    border: 1px solid #555;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.pageButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.pageButton:hover:not(:disabled) {
+    background-color: #3d355a; 
+}
+
+.form {
+    background-color: #1B1833; 
+    border: 2px solid #3d355a;
+    border-radius: 10px;
+    padding: 40px;
+    width: 100%;
+    height: 30dvw;
+    max-width: 500px;
+    margin: 20px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    color: #f4f4f4;
+    overflow: auto;
+}
+
+.form h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.form label {
+    display: block;
+    font-weight: bold;
+    color: #f4f4f4;
+}
+
+.form input,
+.form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.form input:focus,
+.form select:focus {
+    border-color: #740938;
+    outline: none;
+}
+
+.form button {
+    padding: 10px 20px;
+    background-color: #740938;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.form button:hover {
+    background-color: #b0456b;
+}
+
+.form button:disabled {
+    background-color: #ccc; /* Светло-серый фон для неактивной кнопки */
+    color: #666; /* Более темный серый цвет текста */
+    cursor: not-allowed; /* Указатель курсора изменен на "запрещено" */
+    box-shadow: none; /* Убираем тень для неактивной кнопки */
+    opacity: 0.7; /* Прозрачность для визуального эффекта */
+    transition: none; /* Убираем анимацию для неактивного состояния */
+}
+
+.form button:not(:disabled):hover {
+    background-color: #b0456b; /* Обычное поведение при наведении для активной кнопки */
+}
+
+
+.error {
+    color: #d9534f;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+.cancelButton {
+    padding: 10px 20px;
+    background-color: #444444; /* Темно-серый фон */
+    color: #ffffff; /* Белый текст */
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: block;
+    margin: 10px auto 0;
+}
+
+.cancelButton:hover {
+    background-color: #5e5e5e; /* Светлее при наведении */
+    transform: scale(1.05); /* Легкое увеличение при наведении */
+}
+
+.cancelButton:active {
+    background-color: #333333; /* Темнее при нажатии */
+    transform: scale(0.95); /* Легкое уменьшение при нажатии */
+}
+
+.cancelButton:disabled {
+    background-color: #999; /* Серый цвет для отключенной кнопки */
+    color: #666; /* Темный текст */
+    cursor: not-allowed;
+    opacity: 0.7; /* Полупрозрачность */
+}
+.addButton {
+    padding: 10px 20px;
+    background-color: #740938; /* Основной акцентный цвет */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.addButton:hover {
+    background-color: #b0456b; /* Светлее при наведении */
+    transform: scale(1.05); /* Легкое увеличение при наведении */
+}
+
+.addButton:active {
+    background-color: #5e215f; /* Темнее при нажатии */
+    transform: scale(0.95); /* Легкое уменьшение при нажатии */
+}
+.iconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 5px;
+    font-size: 16px;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.iconButton:hover {
+    color: #b0456b; /* Цвет при наведении */
+}
+
+.iconButton:active {
+    color: #5e215f; /* Цвет при клике */
+}
+.selectWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Расстояние между текстом и выпадающим списком */
+    margin: 15px 0; /* Отступы вокруг */
+    font-family: Arial, sans-serif; /* Шрифт */
+    font-size: 16px; /* Размер текста */
+}
+
+.selectWrapper label {
+    font-weight: bold;
+    color: #333; /* Цвет текста */
+}
+
+.selectWrapper select {
+    padding: 5px 10px; /* Внутренние отступы */
+    font-size: 14px; /* Размер текста */
+    border: 1px solid #ccc; /* Граница */
+    border-radius: 4px; /* Закругленные углы */
+    background-color: #fff; /* Цвет фона */
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.selectWrapper select:focus {
+    border-color: #007bff; /* Цвет границы при фокусе */
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5); /* Подсветка */
+    outline: none; /* Убираем стандартное выделение */
+}
+
+.selectWrapper select:hover {
+    border-color: #007bff; /* Цвет границы при наведении */
+}

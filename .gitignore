@@ -1,0 +1,43 @@
+# Java and Maven
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+target/
+
+# Logs
+*.log
+
+# IDE settings
+.idea/
+*.iml
+.vscode/
+
+# Node.js (для music-system-client, если это React или другой фронтенд на Node.js)
+node_modules/
+build/
+dist/
+
+# Docker
+docker-compose.override.yml
+*.env
+Dockerfile
+Dockerfile.*
+.dockerignore
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Application configuration
+application.properties
+application.yml
