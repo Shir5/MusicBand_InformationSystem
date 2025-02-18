@@ -26,6 +26,16 @@ public class DatabaseService {
     @Autowired
     private UserRepository userRepository;
 
+    // Метод для группировки по creationDate и подсчета количества элементов
+    public List<Map<String, Object>> groupByCreationDate() {
+        String sql = "SELECT DATE(creation_date) AS creation_date, COUNT(*) AS count " +
+                "FROM music_band " +
+                "GROUP BY DATE(creation_date) " +
+                "ORDER BY DATE(creation_date)";
+        return jdbcTemplate.queryForList(sql);
+    }
+
+
     // Проверка, является ли текущий пользователь администратором или создателем группы
     private void validateUserPermission(int bandId) {
         // Получение текущего пользователя из контекста безопасности

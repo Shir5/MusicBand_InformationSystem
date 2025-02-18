@@ -1,21 +1,21 @@
 package com.example.music_system.dto;
 
-import com.example.music_system.dto.CoordinatesDto;
 import com.example.music_system.model.MusicGenre;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
-import jakarta.validation.constraints.*;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
-public class MusicBandDto {
+public class MusicBandImportDto {
 
-    private Integer id;
-
-    @NotBlank(message = "Название не может быть пустым.")
+    @NotBlank(message = "Название группы не может быть пустым.")
     private String name;
 
     @NotNull(message = "Координаты обязательны.")
-    private CoordinatesDto coordinates; // Используем DTO для координат
+    private CoordinatesDto coordinates;
 
     @NotNull(message = "Жанр обязателен.")
     private MusicGenre genre;
@@ -35,22 +35,13 @@ public class MusicBandDto {
     @NotNull(message = "Дата основания обязательна.")
     private ZonedDateTime establishmentDate;
 
-    @NotNull
-    private LocalDate creationDate;
+    @Valid
+    @NotNull(message = "Данные лейбла обязательны.")
+    private LabelDto label;
 
-
-    private Integer labelId; // ID связанного лейбла
-
-    private Integer bestAlbumId; // ID лучшего альбома, который может быть связан с группой
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    @Valid
+    @NotNull(message = "Данные альбома обязательны.")
+    private AlbumDto bestAlbum;
 
     public String getName() {
         return name;
@@ -116,27 +107,21 @@ public class MusicBandDto {
         this.establishmentDate = establishmentDate;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
+    public LabelDto getLabel() {
+        return label;
     }
 
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
+    public void setLabel(LabelDto label) {
+        this.label = label;
     }
 
-    public Integer getLabelId() {
-        return labelId;
+    public AlbumDto getBestAlbum() {
+        return bestAlbum;
     }
 
-    public void setLabelId(Integer labelId) {
-        this.labelId = labelId;
+    public void setBestAlbum(AlbumDto bestAlbum) {
+        this.bestAlbum = bestAlbum;
     }
 
-    public Integer getBestAlbumId() {
-        return bestAlbumId;
-    }
 
-    public void setBestAlbumId(Integer bestAlbumId) {
-        this.bestAlbumId = bestAlbumId;
-    }
 }

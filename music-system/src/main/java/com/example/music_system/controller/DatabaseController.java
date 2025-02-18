@@ -14,6 +14,11 @@ public class DatabaseController {
     @Autowired
     private DatabaseService databaseService;
 
+    @GetMapping("/group-by-creation-date")
+    public List<Map<String, Object>> groupByCreationDate() {
+        return databaseService.groupByCreationDate();
+    }
+
     // Подсчет лейблов
     @GetMapping("/count-labels")
     public int countLabels(@RequestParam long threshold) {

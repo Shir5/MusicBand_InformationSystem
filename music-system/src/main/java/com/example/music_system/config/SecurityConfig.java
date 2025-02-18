@@ -43,8 +43,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/requests/**").permitAll()
                         .requestMatchers("/ws/**").permitAll() // Разрешить доступ к WebSocket
+                        .requestMatchers("/api/history/**").authenticated()
                         .requestMatchers("/api/albums/**").authenticated() // Авторизация для всех методов /api/labels
                         .requestMatchers("/api/labels/**").authenticated() // Авторизация для всех методов /api/labels
+                        .requestMatchers("/api/database/**").permitAll() // Только ADMIN для /api/database/**
+                        .requestMatchers("/api/bands/import-bands-with-file").authenticated()
                         // Общая политика для всех остальных запросов
                         .anyRequest().authenticated()
                 )

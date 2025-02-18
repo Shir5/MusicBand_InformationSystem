@@ -64,4 +64,12 @@ public class JwtUtil {
             return false; // Invalid token
         }
     }
+
+    // Извлечение имени пользователя из токена
+    public String extractUsernameFromToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return extractUsername(token.substring(7));
+        }
+        throw new RuntimeException("Invalid Authorization header format");
+    }
 }

@@ -5,6 +5,7 @@ import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import BandManager from "../bandManager/BandManager";
 import AlbumManager from "../album/AlbumManager";
+import ImportHistoryManager from "../importManager/ImportHistoryManager";
 import LabelManager from "../label/LabelManager";
 import AdminRequestsManager from "../molecules/adminRequestManager/AdminRequestsManager";
 import styles from "./Dashboard.module.css";
@@ -18,7 +19,7 @@ const Dashboard = () => {
 
     const [username, setUsername] = useState("");
 
-    const pagesOrder = ["bands", "albums", "labels", "special-requests"]; // Добавили "special-requests"
+    const pagesOrder = ["bands", "albums", "labels", "special-requests", "import-history"]; // Добавили "import-history"
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -45,7 +46,7 @@ const Dashboard = () => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
-        window.location.href = "/auth";
+        window.location.href = "/";
     };
 
     const renderContent = () => {
@@ -58,13 +59,16 @@ const Dashboard = () => {
                 return <LabelManager />;
             case "special-requests":
                 return <SpecialRequests />;
+            case "import-history":
+                return <ImportHistoryManager />;
             case "admin-requests":
                 return <AdminRequestsManager />;
             default:
                 return <h2>Select a section from the menu above</h2>;
         }
     };
-    
+
+
 
     const pageVariants = {
         initial: (direction) => ({
@@ -119,6 +123,15 @@ const Dashboard = () => {
                             onClick={() => handleNavigation("special-requests")}
                         >
                             Special Requests
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
+                            to="import-history"
+                            className={currentPath === "import-history" ? styles.active : ""}
+                            onClick={() => handleNavigation("import-history")}
+                        >
+                            Import History
                         </Link>
                     </li>
 

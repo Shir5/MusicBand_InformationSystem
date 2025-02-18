@@ -6,6 +6,7 @@ public class AlbumDto {
     private Integer id; // Уникальный идентификатор альбома
 
     @NotBlank(message = "Название альбома не может быть пустым.")
+    @Size(max = 100, message = "Название альбома не должно превышать 100 символов.")
     private String name;
 
     @NotNull(message = "Количество треков обязательно.")

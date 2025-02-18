@@ -7,6 +7,8 @@ import com.example.music_system.repository.LabelRepository;
 import com.example.music_system.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class LabelService {
         return labelRepository.findById(id);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Label createLabel(Label label, String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
@@ -44,6 +47,7 @@ public class LabelService {
         return savedLabel;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Label updateLabel(Integer id, Label label, String username) {
         Label existingLabel = labelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Label not found with ID: " + id));
@@ -81,5 +85,4 @@ public class LabelService {
         // Отправка обновлений через WebSocket
         messagingTemplate.convertAndSend("/topic/labels", Map.of("action", "delete", "id", id));
     }
-
 }

@@ -188,7 +188,7 @@
 .addButton {
     padding: 10px 20px;
     background-color: #740938; /* Основной акцентный цвет */
-    color: #ffffff;
+    color: #ffffff !important;
     border: none;
     border-radius: 5px;
     font-size: 16px;
@@ -237,7 +237,6 @@
 
 .selectWrapper label {
     font-weight: bold;
-    color: #333; /* Цвет текста */
 }
 
 .selectWrapper select {
@@ -259,3 +258,5 @@
 .selectWrapper select:hover {
     border-color: #007bff; /* Цвет границы при наведении */
 }
+
+

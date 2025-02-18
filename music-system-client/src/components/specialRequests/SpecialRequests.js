@@ -4,6 +4,7 @@ import {
     findDescriptionsByPrefix,
     addSingleToBand,
     addParticipantToBand,
+    groupByCreationDate
 } from "../../services/api";
 import styles from "./SpecialRequests.module.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -24,6 +25,21 @@ const SpecialRequests = () => {
 
     // Общие состояния
     const [loading, setLoading] = useState(false);
+
+    const [groupedData, setGroupedData] = useState([]);
+
+    const handleGroupByCreationDate = async () => {
+        setLoading(true);
+        try {
+            const result = await groupByCreationDate();
+            setGroupedData(result);
+            toast.success("Data grouped successfully!");
+        } catch (err) {
+            toast.error(`Failed to group data: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleCountLabels = async () => {
         setLoading(true);
@@ -79,6 +95,32 @@ const SpecialRequests = () => {
         <div className={styles.specialRequests}>
             <ToastContainer />
             <h2>Special Requests</h2>
+
+            {/* Группировка по creationDate */}
+            <div className={styles.requestSection}>
+                <h3>Group by Creation Date</h3>
+                <button onClick={handleGroupByCreationDate} disabled={loading}>
+                    Fetch Grouped Data
+                </button>
+                {groupedData.length > 0 && (
+                    <table className={styles.groupedTable}>
+                        <thead>
+                            <tr>
+                                <th>Creation Date</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {groupedData.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.creation_date}</td>
+                                    <td>{item.count}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
 
             {/* Подсчет лейблов */}
             <div className={styles.requestSection}>

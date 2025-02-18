@@ -5,9 +5,12 @@ import jakarta.validation.constraints.*;
 public class LabelDto {
     private Integer id; // Уникальный идентификатор лейбла
 
+    @NotBlank(message = "Название лейбла не может быть пустым.")
+    @Size(max = 100, message = "Название лейбла не должно превышать 100 символов.")
     private String name; // Поле для имени лейбла
 
     @NotNull(message = "Количество групп обязательно.")
+    @PositiveOrZero(message = "Количество групп не может быть отрицательным.")
     private Long bands;
 
     // Геттеры и сеттеры

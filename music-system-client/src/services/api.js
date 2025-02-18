@@ -2,11 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
     baseURL: 'http://localhost:8080/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
+
     withCredentials: true, // Если используется cookie для CORS
 });
+
 
 // Добавление JWT-токена в заголовок Authorization
 api.interceptors.request.use(
@@ -78,7 +77,7 @@ export const register = async (username, password, isAdminRequest = false) => {
         const response = await api.post('/auth/register', {
             username,
             password,
-            isAdminRequest, 
+            isAdminRequest,
         });
         return response.data;
     } catch (error) {
@@ -307,5 +306,67 @@ export const findDescriptionsByPrefix = async (prefix) => {
         throw new Error(error.response?.data?.message || 'Failed to find descriptions');
     }
 };
+
+export const groupByCreationDate = async () => {
+    try {
+        const response = await api.get(`/database/group-by-creation-date`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to group data:', error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Failed to group data');
+    }
+};
+export const importBand = async (jsonData, file) => {
+    try {
+        console.log("Importing band with data and file:", jsonData, file);
+
+        const formData = new FormData();
+        formData.append("file", file); // Добавляем файл
+        formData.append("data", JSON.stringify(jsonData)); // Добавляем JSON-данные как строку
+
+        // Отправляем POST-запрос с FormData без явной установки Content-Type
+        const response = await api.post("/bands/import-bands", formData);
+
+        console.log("Import successful:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to import band:", error.response?.data || error.message);
+        throw new Error(error.response?.data?.message || "Failed to import band");
+    }
+};
+
+
+export const getImportHistory = async (token, isAdmin) => {
+    try {
+        const response = await api.get("/history", {
+            headers: {
+                "Authorization": `Bearer ${token}`, // Передаём токен в заголовках
+            },
+            params: {
+                isAdmin, // Передаём isAdmin как булевый параметр
+                onlySuccessful: true, // Дополнительный параметр, если необходимо
+            },
+        });
+        return response.data; // Возвращаем только данные
+    } catch (error) {
+        console.error("API error [403]: ", error);
+        throw error;
+    }
+};
+
+export const downloadImportFile = async (historyId, token) => {
+    try {
+        const response = await api.get(`/history/${historyId}/download-file`, {
+            headers: {
+                "Authorization": token,
+            },
+            responseType: "blob", // Важно для получения файла
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
 
 export default api;

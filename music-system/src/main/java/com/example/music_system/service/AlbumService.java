@@ -7,6 +7,8 @@ import com.example.music_system.repository.AlbumRepository;
 import com.example.music_system.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ public class AlbumService {
     }
 
     // Создание нового альбома
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Album createAlbum(Album album, String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
@@ -52,6 +55,7 @@ public class AlbumService {
 
     // Обновление альбома
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Album updateAlbum(Integer id, Album album, String username) {
         Album existingAlbum = albumRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Album not found with ID: " + id));

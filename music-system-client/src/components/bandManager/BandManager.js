@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getBands, createBand, deleteBand, updateBand, getAlbums, getLabels } from "../../services/api";
+import { getBands, createBand, deleteBand, updateBand, getAlbums, getLabels, importBand } from "../../services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import styles from "./BandManager.module.css";
@@ -27,6 +27,31 @@ const BandManager = () => {
     const [sortDirection, setSortDirection] = useState("asc");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [bandToDelete, setBandToDelete] = useState(null);
+
+const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        // Читаем содержимое файла как текст
+        const fileContent = await file.text();
+        // Парсим в JSON
+        const jsonData = JSON.parse(fileContent);
+
+        // Отправляем файл и JSON-данные на сервер
+        await importBand(jsonData, file);
+
+        toast.success("Band imported successfully!");
+        // Обновляем список групп после импорта
+        fetchBands();
+    } catch (error) {
+        toast.error("Failed to import band. Check the console logs.");
+        console.error("Error importing band:", error);
+    } finally {
+        // Сбрасываем значение input, чтобы тот же файл можно было загрузить снова
+        event.target.value = null;
+    }
+};
 
     const handleSort = (column) => {
         if (sortColumn === column) {
@@ -59,14 +84,15 @@ const BandManager = () => {
 
     const [newBand, setNewBand] = useState({
         name: "",
-        x: 0,
-        y: 0,
+        coordinates: { x: "", y: "" }, // Хранение координат как строки
         genre: "",
-        numberOfParticipants: 0,
-        albumsCount: 0,
-        singlesCount: 0,
+        numberOfParticipants: "",
+        albumsCount: "",
+        singlesCount: "",
         description: "",
         establishmentDate: "",
+        bestAlbum: null,
+        labelId: null,
     });
 
     const fetchAlbums = async () => {
@@ -107,16 +133,18 @@ const BandManager = () => {
     const resetForm = () => {
         setNewBand({
             name: "",
-            x: 0,
-            y: 0,
+            coordinates: { x: "", y: "" }, // Сброс координат как пустых строк
             genre: "",
-            numberOfParticipants: 0,
-            albumsCount: 0,
-            singlesCount: 0,
+            numberOfParticipants: "",
+            albumsCount: "",
+            singlesCount: "",
             description: "",
             establishmentDate: "",
+            bestAlbum: null,
+            labelId: null,
         });
         setShowForm(false);
+        setFieldErrors({});
     };
 
     useEffect(() => {
@@ -128,8 +156,12 @@ const BandManager = () => {
     const handleEditClick = (band) => {
         setNewBand({
             ...band,
-            x: band.coordinates.x,
-            y: band.coordinates.y,
+            coordinates: {
+                x: band.coordinates.x.toString(),
+                y: band.coordinates.y.toString(),
+            },
+            bestAlbum: band.bestAlbum ? band.bestAlbum.id : null,
+            labelId: band.label ? band.label.id : null,
         });
         setShowForm(true);
     };
@@ -144,9 +176,11 @@ const BandManager = () => {
             try {
                 await deleteBand(bandToDelete);
                 setBands((prev) => prev.filter((band) => band.id !== bandToDelete));
+                toast.success("Band deleted successfully!");
             } catch (err) {
                 setError("Failed to delete band.");
                 console.error("Error deleting band:", err);
+                toast.error("Failed to delete band.");
             } finally {
                 setIsModalOpen(false);
                 setBandToDelete(null);
@@ -158,63 +192,131 @@ const BandManager = () => {
         setIsModalOpen(false);
         setBandToDelete(null);
     };
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewBand((prev) => ({
-            ...prev,
-            [name]: ["x", "y", "numberOfParticipants", "albumsCount", "singlesCount"].includes(name)
-                ? parseFloat(value) || 0
-                : value || "",
-        }));
+        const nameParts = name.split('.'); // Разделяем имя поля по точке
+
+        if (nameParts.length === 2) {
+            const [parent, child] = nameParts;
+            setNewBand((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value,
+                },
+            }));
+            if (fieldErrors[name]) {
+                setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
+            }
+        } else {
+            setNewBand((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+            if (fieldErrors[name]) {
+                setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
+            }
+        }
+
+        // Добавьте логирование для даты
+        if (name === "establishmentDate") {
+            console.log("Establishment Date changed to:", value);
+        }
     };
     const handleSubmit = async () => {
         const newFieldErrors = {};
-    
+
+        // Валидация на фронтенде
         if (!newBand.name.trim()) {
-            newFieldErrors.name = "Name is required.";
+            newFieldErrors["name"] = "Name is required.";
         }
-        if (newBand.x < -495) {
-            newFieldErrors.x = "X coordinate must be greater than -495.";
+        if (newBand.coordinates.x === "" || isNaN(newBand.coordinates.x)) {
+            newFieldErrors["coordinates.x"] = "X coordinate must be a valid number.";
+        } else if (parseFloat(newBand.coordinates.x) < -495) {
+            newFieldErrors["coordinates.x"] = "X coordinate must be greater than or equal to -495.";
         }
+
+        if (newBand.coordinates.y === "" || isNaN(newBand.coordinates.y)) {
+            newFieldErrors["coordinates.y"] = "Y coordinate must be a valid number.";
+        }
+
         if (!newBand.genre) {
-            newFieldErrors.genre = "Genre is required.";
+            newFieldErrors["genre"] = "Genre is required.";
         }
-        if (newBand.numberOfParticipants <= 0) {
-            newFieldErrors.numberOfParticipants = "Number of participants must be greater than 0.";
+        if (newBand.numberOfParticipants === "" || isNaN(newBand.numberOfParticipants) || parseFloat(newBand.numberOfParticipants) <= 0 || parseFloat(newBand.numberOfParticipants) > 100) {
+            newFieldErrors["numberOfParticipants"] = "Number of participants must be between 1 and 100.";
         }
-    
+
+        if (newBand.albumsCount === "" || isNaN(newBand.albumsCount) || parseFloat(newBand.albumsCount) <= 0) {
+            newFieldErrors["albumsCount"] = "Albums count must be greater than 0.";
+        }
+
+        if (!newBand.description.trim()) {
+            newFieldErrors["description"] = "Description is required.";
+        }
+
+        if (!newBand.establishmentDate) {
+            newFieldErrors["establishmentDate"] = "Establishment Date is required.";
+        } else {
+            const date = new Date(newBand.establishmentDate);
+            if (isNaN(date.getTime()) || date > new Date()) {
+                newFieldErrors["establishmentDate"] = "Establishment Date must be a valid date and cannot be in the future.";
+            }
+        }
+
         if (Object.keys(newFieldErrors).length > 0) {
             setFieldErrors(newFieldErrors);
             toast.error("Please correct the highlighted errors.");
             return;
         }
-    
+
         try {
             const formattedBand = {
-                ...newBand,
-                coordinates: { x: newBand.x, y: newBand.y },
+                name: newBand.name,
+                coordinates: {
+                    x: parseFloat(newBand.coordinates.x),
+                    y: parseFloat(newBand.coordinates.y),
+                },
+                genre: newBand.genre,
+                numberOfParticipants: parseFloat(newBand.numberOfParticipants),
+                albumsCount: parseFloat(newBand.albumsCount),
+                singlesCount: newBand.singlesCount ? parseFloat(newBand.singlesCount) : null,
+                description: newBand.description,
                 establishmentDate: new Date(newBand.establishmentDate).toISOString(),
                 bestAlbumId: newBand.bestAlbum ? parseInt(newBand.bestAlbum) : null,
                 labelId: newBand.labelId ? parseInt(newBand.labelId) : null,
             };
-    
+
             let updatedBand;
             if (newBand.id) {
                 updatedBand = await updateBand(newBand.id, formattedBand);
+                toast.success("Band updated successfully!");
             } else {
                 updatedBand = await createBand(formattedBand);
+                toast.success("Band created successfully!");
             }
-    
+
             setBands((prev) => [...prev.filter((band) => band.id !== updatedBand.id), updatedBand]);
             resetForm();
-            toast.success("Band saved successfully!");
         } catch (err) {
-            toast.error("Failed to save band.");
+            if (err.response && err.response.data.errors) {
+                const serverFieldErrors = {};
+                err.response.data.errors.forEach((error) => {
+                    serverFieldErrors[error.field] = error.message;
+                });
+                setFieldErrors(serverFieldErrors);
+                toast.error("Please correct the highlighted errors.");
+            } else if (err.response && err.response.status === 403) {
+                toast.error("You do not have permission to perform this action.");
+            } else {
+                toast.error(err.response?.data?.message || "Failed to save band.");
+            }
             console.error("Error saving band:", err);
         }
     };
-    
+
+
+
     useEffect(() => {
         const socket = new SockJS("http://localhost:8080/ws");
         const stompClient = Stomp.over(socket);
@@ -260,7 +362,6 @@ const BandManager = () => {
     };
 
     return (
-        
         <div className={styles.container}>
             <ToastContainer />
             <h1 style={{ color: "#f4f4f4" }}>Dashboard</h1>
@@ -302,32 +403,34 @@ const BandManager = () => {
                                     required
                                     placeholder="Enter band name"
                                 />
-                                {fieldErrors.name && <p className={styles.error}>{fieldErrors.name}</p>}
+                                {fieldErrors["name"] && <p className={styles.error}>{fieldErrors["name"]}</p>}
                             </label>
 
                             <label>
                                 Coordinates (X):
                                 <input
-                                    type="number"
-                                    name="x"
-                                    value={newBand.x}
+                                    type="number" // Исправлено с "input" на "number"
+                                    name="coordinates.x"
+                                    value={newBand.coordinates.x}
                                     onChange={handleInputChange}
                                     required
+                                    step="1" // Необязательно, для целых чисел
                                 />
-                                {fieldErrors.x && <p className={styles.error}>{fieldErrors.x}</p>}
+                                {fieldErrors["coordinates.x"] && <p className={styles.error}>{fieldErrors["coordinates.x"]}</p>}
                             </label>
 
                             <label>
                                 Coordinates (Y):
                                 <input
-                                    type="number"
-                                    name="y"
-                                    value={newBand.y}
+                                    type="number" // Исправлено с "input" на "number"
+                                    name="coordinates.y"
+                                    value={newBand.coordinates.y}
                                     onChange={handleInputChange}
                                     required
                                     min={-495}
+                                    step="1" // Необязательно, для целых чисел
                                 />
-                                {fieldErrors.y && <p className={styles.error}>{fieldErrors.y}</p>}
+                                {fieldErrors["coordinates.y"] && <p className={styles.error}>{fieldErrors["coordinates.y"]}</p>}
                             </label>
 
                             <label>
@@ -344,7 +447,7 @@ const BandManager = () => {
                                     <option value="MATH_ROCK">MATH_ROCK</option>
                                     <option value="POST_PUNK">POST_PUNK</option>
                                 </select>
-                                {fieldErrors.genre && <p className={styles.error}>{fieldErrors.genre}</p>}
+                                {fieldErrors["genre"] && <p className={styles.error}>{fieldErrors["genre"]}</p>}
                             </label>
 
                             <label>
@@ -357,7 +460,7 @@ const BandManager = () => {
                                     required
                                     min={1}
                                 />
-                                {fieldErrors.numberOfParticipants && <p className={styles.error}>{fieldErrors.numberOfParticipants}</p>}
+                                {fieldErrors["numberOfParticipants"] && <p className={styles.error}>{fieldErrors["numberOfParticipants"]}</p>}
                             </label>
 
                             <label>
@@ -369,7 +472,7 @@ const BandManager = () => {
                                     onChange={handleInputChange}
                                     min={1}
                                 />
-                                {fieldErrors.albumsCount && <p className={styles.error}>{fieldErrors.albumsCount}</p>}
+                                {fieldErrors["albumsCount"] && <p className={styles.error}>{fieldErrors["albumsCount"]}</p>}
                             </label>
 
                             <label>
@@ -381,8 +484,9 @@ const BandManager = () => {
                                     onChange={handleInputChange}
                                     min={1}
                                 />
-                                {fieldErrors.singlesCount && <p className={styles.error}>{fieldErrors.singlesCount}</p>}
+                                {fieldErrors["singlesCount"] && <p className={styles.error}>{fieldErrors["singlesCount"]}</p>}
                             </label>
+
                             <label>
                                 Description:
                                 <textarea
@@ -391,12 +495,12 @@ const BandManager = () => {
                                     onChange={handleInputChange}
                                     required
                                     style={{
-                                        resize: "none", // Запрещает изменение размера
-                                        width: "100%", // Полная ширина
-                                        height: "80px", // Фиксированная высота для единообразия
+                                        resize: "none",
+                                        width: "100%",
+                                        height: "80px",
                                     }}
                                 />
-                                {fieldErrors.description && <p className={styles.error}>{fieldErrors.description}</p>}
+                                {fieldErrors["description"] && <p className={styles.error}>{fieldErrors["description"]}</p>}
                             </label>
 
                             <label>
@@ -407,7 +511,7 @@ const BandManager = () => {
                                     onChange={(e) => {
                                         setNewBand((prev) => ({
                                             ...prev,
-                                            bestAlbum: e.target.value || null, // Установите null, если ничего не выбрано
+                                            bestAlbum: e.target.value || null,
                                         }));
                                     }}
                                 >
@@ -418,9 +522,8 @@ const BandManager = () => {
                                         </option>
                                     ))}
                                 </select>
+                                {fieldErrors["bestAlbum"] && <p className={styles.error}>{fieldErrors["bestAlbum"]}</p>}
                             </label>
-                            {fieldErrors.bestAlbum && <p className={styles.error}>{fieldErrors.bestAlbum}</p>}
-
 
                             <label>
                                 Establishment Date:
@@ -431,8 +534,9 @@ const BandManager = () => {
                                     onChange={handleInputChange}
                                     required
                                 />
-                                {fieldErrors.establishmentDate && <p className={styles.error}>{fieldErrors.establishmentDate}</p>}
+                                {fieldErrors["establishmentDate"] && <p className={styles.error}>{fieldErrors["establishmentDate"]}</p>}
                             </label>
+
                             <label>
                                 Label:
                                 <select
@@ -448,15 +552,15 @@ const BandManager = () => {
                                         </option>
                                     ))}
                                 </select>
-                                {fieldErrors.labelId && (
-                                    <p className={styles.error}>{fieldErrors.labelId}</p>
+                                {fieldErrors["labelId"] && (
+                                    <p className={styles.error}>{fieldErrors["labelId"]}</p>
                                 )}
                             </label>
+
                             <button onClick={handleSubmit}>
                                 {newBand.id ? "Update Band" : "Create Band"}
                             </button>
                         </div>
-
                     )}
 
                     <div className={styles.selectWrapper}>
@@ -470,6 +574,18 @@ const BandManager = () => {
                             <option value={10}>10</option>
                             <option value={20}>20</option>
                         </select>
+                        <div className={styles.addButton}>
+                            <label htmlFor="jsonUpload" className={styles.uploadButton}>
+                                Import JSON File
+                            </label>
+                            <input
+                                type="file"
+                                id="jsonUpload"
+                                accept="application/json"
+                                onChange={handleFileUpload}
+                                style={{ display: "none" }}
+                            />
+                        </div>
                     </div>
                     <FilterInput
                         filterQuery={filterQuery}
@@ -477,7 +593,9 @@ const BandManager = () => {
                         filterColumn={filterColumn}
                         setFilterColumn={setFilterColumn}
                     />
+
                     <table className={styles.table}>
+
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort("id")}>
@@ -552,6 +670,7 @@ const BandManager = () => {
                                         <FontAwesomeIcon icon={sortDirection === "asc" ? faSortUp : faSortDown} />
                                     )}
                                 </th>
+                                <th>Actions</th> {/* Добавлена колонка Actions */}
                             </tr>
                         </thead>
 
@@ -599,14 +718,12 @@ const BandManager = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="12" className={styles.noData}>
+                                    <td colSpan="13" className={styles.noData}>
                                         No data available
                                     </td>
                                 </tr>
                             )}
                         </tbody>
-
-
                     </table>
 
                     <div className={styles.pagination}>
@@ -632,8 +749,7 @@ const BandManager = () => {
             )}
         </div>
     );
+
 };
 
 export default BandManager;
-
-

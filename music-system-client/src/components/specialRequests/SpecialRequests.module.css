@@ -46,11 +46,65 @@ h2 {
     background-color: #b0456b;
 }
 
-
-
 .error {
     color: #d9534f;
     font-size: 14px;
     margin-top: 10px;
     text-align: center;
+}
+
+/* Новые стили для таблицы группировки по creationDate */
+.groupedTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.groupedTable th,
+.groupedTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.groupedTable th {
+    background-color: #740938;
+    color: white;
+    font-weight: bold;
+}
+
+.groupedTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.groupedTable tr:hover {
+    background-color: #e6e6e6;
+}
+
+/* Стили для списка описаний */
+.requestSection ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.requestSection li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+    .requestSection input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .requestSection button {
+        width: 100%;
+    }
+
+    .groupedTable th,
+    .groupedTable td {
+        padding: 8px 10px;
+    }
 }

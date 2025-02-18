@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 @Component
 public class DatabaseInitializer {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
+    public static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
